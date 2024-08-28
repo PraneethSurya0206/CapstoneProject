@@ -1,7 +1,10 @@
 package com.controller;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dto.LearnerDto;
+import com.exceptions.CustomException;
 import com.model.Academy;
 import com.model.Enrollment;
 import com.model.Learner;
@@ -35,6 +39,7 @@ public class LearnerController {
 	
 	
 	
+	
 
 	String baseUrl = "http://academy/academies";
 	 
@@ -46,17 +51,19 @@ public class LearnerController {
 		return new ResponseEntity<>(register, HttpStatus.OK);
 	}
 	
+	//login
 	@PostMapping("/login")
-    public ResponseEntity<?> loginCustomer(@Valid @RequestBody LearnerDto learnerlogin) {
-	 Learner learner2 =learnerlogin.toEnity();
-        String customer = lservice.verify(learner2); //changed Learner to string
-        if (customer != null) {
-            return ResponseEntity.ok(customer);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Required Both email and password");
-        }
-    }
+	public ResponseEntity<?> loginCustomer(@Valid @RequestBody LearnerDto learnerlogin) {
+		Learner learners = learnerlogin.toEnity();
+		String customer = lservice.verify(learners); 
+		if (customer != null) {
+			return ResponseEntity.ok(customer);
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Give proper email and password");
+		}
+	}
 	
+	//by sport name
 	@GetMapping("/sport/{sportName}")
     public ResponseEntity<List<Academy>> getAcademiesBySportName(@PathVariable("sportName") String sportName) {
 		String url = baseUrl+ "/" + sportName;
@@ -64,10 +71,90 @@ public class LearnerController {
         return new ResponseEntity<>(academies, HttpStatus.OK);
     }
 	
-	@PostMapping("/enroll")
-	public ResponseEntity<Enrollment> enrollInAcademy(@PathVariable int learnerId, @PathVariable int academyId) {
-	    Enrollment enroll = lservice.enrollInAcademy(learnerId, academyId);
-	    return new ResponseEntity<>(enroll, HttpStatus.CREATED);
+	//enroll
+	  @PostMapping("/enroll")
+             public ResponseEntity<String> LearnerEnrollment(@Valid @RequestBody Enrollment enrollments) {
+               Logger logger = LoggerFactory.getLogger(this.getClass());
+
+            try {
+               eservice.enrollment(enrollments);
+                logger.info("Enrolled successfully");
+                  return new ResponseEntity<>("Enrolled successfully", HttpStatus.CREATED);
+                 } catch (Exception e) {
+                     logger.error("Error while enrolling: {}", e.getMessage());
+                 return new ResponseEntity<>("Error while enrolling: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+                 }
+                 }
+	  
+	  
+	  @GetMapping("/{enrollmentId}")
+		public ResponseEntity<Enrollment> getEnrollmentById(@PathVariable("enrollmentId") int id) throws CustomException {
+			Optional<Enrollment> enrollment = eservice.getEnrollmentById(id);
+			if(enrollment.isPresent()) {
+				return ResponseEntity.ok(enrollment.get());
+			}else {
+				throw new CustomException("Record of No Enrollment is found by id: " + id);
+			}
 	}
+	  
+	 @GetMapping("/academy/{academyId}")
+	  public ResponseEntity<?> searchAcademiesbyId(@PathVariable("academyId") int academyId) throws CustomException {
+	        Academy academy = lservice.getAcademyById(academyId);
+	        if (academy == null ) {
+	            throw new CustomException("No records found for the AcademyId: " + academyId);
+	        }
+	        
+	        return new ResponseEntity<>(academy, HttpStatus.OK);
+	    }
 	
-}
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 //by academyid
+		
+		
+	  
+	  
+		/*@GetMapping(("/academy/{academyId}"))
+	    public ResponseEntity<List<Academy>> getAcademyById(@PathVariable("academyId") int academyId) {
+			String url = baseUrl+ "/" + academyId;
+	        List<Academy> academies =  lservice.getAcademyId(academyId);
+	        return new ResponseEntity<>(academies, HttpStatus.OK);
+	    }*/
+	
+	}
+ 
+       
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

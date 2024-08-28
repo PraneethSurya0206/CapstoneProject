@@ -22,6 +22,8 @@ public class AcademyClient {
 	        );
 	        return Arrays.asList(response.getBody());
 	    }
-	}
 
+	  
+	
+}
 

@@ -50,9 +50,8 @@ public class Learner {
     private String password;
     
 	// One-to-Many relationship with Enrollment
-	@OneToMany(mappedBy = "learner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	
-    private List<Enrollment> enrollments;;
+	/*@OneToMany(mappedBy = "learner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<Enrollment> enrollments;*/
 
 
 	public int getLearner_id() {

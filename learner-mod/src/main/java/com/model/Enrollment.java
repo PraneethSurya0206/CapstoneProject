@@ -20,50 +20,50 @@ public class Enrollment {
 	
 	    @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    @Column(name = "enrollmentID")
-	    private int enrollment_id;
+	    @Column(name = "enrollment_id")
+	    private int enrollmentId;
 
-	    @Column(name = "academyID" ,nullable = false)
-	    private int academy_id;
+	    @Column(name = "academy_id" ,nullable = false)
+	    private int academyId;
 
-	    @Column(name = "enrollmentDate")
-	    private LocalDate enrollment_date;
-
+	    @Column(name = "enrollment_date")
+	    private LocalDate enrollmentDate;
 	    
-	    @ManyToOne
-		@JoinColumn(name = "learnerId", nullable = false)
-	    private Learner learner;
+	    @Column(name= "learner_id")
+	    private int learnerId;
 
-		public int getEnrollment_id() {
-			return enrollment_id;
+		public int getEnrollmentId() {
+			return enrollmentId;
 		}
 
-		public void setEnrollment_id(int enrollment_id) {
-			this.enrollment_id = enrollment_id;
+		public void setEnrollmentId(int enrollmentId) {
+			this.enrollmentId = enrollmentId;
 		}
 
-		public int getAcademy_id() {
-			return academy_id;
+		public int getAcademyId() {
+			return academyId;
 		}
 
-		public void setAcademy_id(int academy_id) {
-			this.academy_id = academy_id;
+		public void setAcademyId(int academyId) {
+			this.academyId = academyId;
 		}
 
-		public LocalDate getEnrollment_date() {
-			return enrollment_date;
+		public LocalDate getEnrollmentDate() {
+			return enrollmentDate;
 		}
 
-		public void setEnrollment_date(LocalDate enrollment_date) {
-			this.enrollment_date = enrollment_date;
+		public void setEnrollmentDate(LocalDate enrollmentDate) {
+			this.enrollmentDate = enrollmentDate;
 		}
 
-		public Learner getLearner_id() {
-			return learner;
+		
+
+		public int getLearnerId() {
+			return learnerId;
 		}
 
-		public void setLearner_id(Learner learner_id) {
-			this.learner = learner_id;
+		public void setLearnerId(int learnerId) {
+			this.learnerId = learnerId;
 		}
 
 		public Enrollment() {
@@ -71,18 +71,21 @@ public class Enrollment {
 			// TODO Auto-generated constructor stub
 		}
 
-		public Enrollment(int academy_id, LocalDate enrollment_date, Learner learner_id) {
+		public Enrollment(int academyId, LocalDate enrollmentDate, int learnerId) {
 			super();
-			this.academy_id = academy_id;
-			this.enrollment_date = enrollment_date;
-			this.learner = learner_id;
+			this.academyId = academyId;
+			this.enrollmentDate = enrollmentDate;
+			this.learnerId = learnerId;
 		}
 
 		@Override
 		public String toString() {
-			return "Enrollment [enrollment_id=" + enrollment_id + ", academy_id=" + academy_id + ", enrollment_date="
-					+ enrollment_date + ", learner_id=" + learner + "]";
+			return "Enrollment [enrollmentId=" + enrollmentId + ", academyId=" + academyId + ", enrollmentDate="
+					+ enrollmentDate + ", learnerId=" + learnerId + "]";
 		}
 		
 
 }
+	   /* @ManyToOne
+		@JoinColumn(name = "learnerId", nullable = false)
+	    private Learner learner;*/
