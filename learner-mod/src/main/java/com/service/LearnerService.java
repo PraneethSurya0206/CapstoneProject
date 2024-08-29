@@ -1,20 +1,16 @@
 package com.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.client.AcademyClient;
+import com.exceptions.CustomException;
 import com.model.Academy;
-import com.model.Enrollment;
 import com.model.Learner;
 import com.repository.LearnerRepository;
-
-import jakarta.validation.Valid;
 
 
 @Service
@@ -33,12 +29,17 @@ public class LearnerService {
 	 String baseUrl = "http://academyms/academies";
 	 
 	 
-	//Registration
-	public Learner addNewLearner(Learner learner) {
-		Learner learnersaved = lrepository.save(learner);
-		return learner;
-		
-	}
+	
+	 
+	 public Learner addNewLearner(Learner learner) throws CustomException {
+		    try {
+		        Learner learnersaved = lrepository.save(learner);
+		        return learnersaved;
+		    } catch (Exception e) {
+		        throw new CustomException("Registration failed. Please try again.");
+		    }
+		}
+
 	
 	 //login
 	public String verify(Learner learner) {
@@ -55,20 +56,10 @@ public class LearnerService {
 	
 	// by sportname//
 
-	 public List<Academy> getAcademiesBySportName(String sportName) {
+	 public List<Academy> getAcademiesBySportName(String sportName) throws CustomException {
 	        return academyClient.getAcademiesBySportName(sportName);
 	    }
 
-	//public List<Academy> getAcademyId(int academyId) {
-		// TODO Auto-generated method stub
-		//return null;
-	 
-	/* public Academy getAcademyId(int academyId) {
-		    
-		    Optional<Academy> academyOptional = Optional.empty();
-		    return academyOptional.orElse(null); 
-		}
-	}*/
 
 
 	 public Academy getAcademyById(int id) {
@@ -77,12 +68,6 @@ public class LearnerService {
 			System.out.println(url);
 			return restTemplate.getForObject(url, Academy.class);
 		}
-
-	/*public List<Academy> getAcademyId(int academyId) {
-		// TODO Auto-generated method stub
-		return null;
-		
-	}*/
 
 	
 }

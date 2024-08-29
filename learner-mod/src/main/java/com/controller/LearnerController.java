@@ -37,15 +37,12 @@ public class LearnerController {
 	@Autowired
 	EnrollmentService eservice;
 	
-	
-	
-	
-
 	String baseUrl = "http://academy/academies";
-	 
+	private static final Logger logger = LoggerFactory.getLogger(LearnerController.class);
 	//Registration
+	
 	@PostMapping("/")
-	public ResponseEntity<?> Register(@Valid @RequestBody Learner learner)
+	public ResponseEntity<?> Register(@Valid @RequestBody Learner learner) throws CustomException
 	{
 		Learner register = lservice.addNewLearner(learner);
 		return new ResponseEntity<>(register, HttpStatus.OK);
@@ -65,14 +62,14 @@ public class LearnerController {
 	
 	//by sport name
 	@GetMapping("/sport/{sportName}")
-    public ResponseEntity<List<Academy>> getAcademiesBySportName(@PathVariable("sportName") String sportName) {
+    public ResponseEntity<List<Academy>> getAcademiesBySportName(@PathVariable("sportName") String sportName) throws CustomException {
 		String url = baseUrl+ "/" + sportName;
         List<Academy> academies = lservice.getAcademiesBySportName(sportName);
         return new ResponseEntity<>(academies, HttpStatus.OK);
     }
 	
 	//enroll
-	  @PostMapping("/enroll")
+	/*  @PostMapping("/enroll")
              public ResponseEntity<String> LearnerEnrollment(@Valid @RequestBody Enrollment enrollments) {
                Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -84,9 +81,10 @@ public class LearnerController {
                      logger.error("Error while enrolling: {}", e.getMessage());
                  return new ResponseEntity<>("Error while enrolling: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
                  }
-                 }
-	  
-	  
+                 }*/
+	
+	    
+	//enrollmentid
 	  @GetMapping("/{enrollmentId}")
 		public ResponseEntity<Enrollment> getEnrollmentById(@PathVariable("enrollmentId") int id) throws CustomException {
 			Optional<Enrollment> enrollment = eservice.getEnrollmentById(id);
@@ -97,18 +95,16 @@ public class LearnerController {
 			}
 	}
 	  
-	 @GetMapping("/academy/{academyId}")
-	  public ResponseEntity<?> searchAcademiesbyId(@PathVariable("academyId") int academyId) throws CustomException {
-	        Academy academy = lservice.getAcademyById(academyId);
-	        if (academy == null ) {
-	            throw new CustomException("No records found for the AcademyId: " + academyId);
-	        }
-	        
-	        return new ResponseEntity<>(academy, HttpStatus.OK);
-	    }
-	
-	 
-	 
+	  
+		 @GetMapping("/academy/{academyId}")
+		  public ResponseEntity<?> searchAcademiesbyId(@PathVariable("academyId") int academyId) throws CustomException {
+		        Academy academy = lservice.getAcademyById(academyId);
+		        if (academy == null ) {
+		            throw new CustomException("No records found for the AcademyId: " + academyId);
+		        }
+		        
+		        return new ResponseEntity<>(academy, HttpStatus.OK);
+		    }
 	 
 	 
 	 

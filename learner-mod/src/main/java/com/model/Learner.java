@@ -1,19 +1,16 @@
 package com.model;
 
 import java.time.LocalDate;
-import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 
 @Entity
 @Table(name = "learners")
@@ -34,6 +31,7 @@ public class Learner {
 
     @Column(name = "birth_date")
     @NotNull(message = "Birthdate required")
+    @Past
     private LocalDate birth_date;
 
     @Column(name = "gender" , length = 5)
