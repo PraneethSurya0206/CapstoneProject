@@ -1,13 +1,14 @@
 package com.service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.exceptions.CustomException;
+
 import com.model.Academy;
 import com.model.Enrollment;
 import com.repository.EnrollmentRepository;
@@ -32,7 +33,7 @@ public class EnrollmentService {
 
 	// enroll//
 	
-	/*public void enrollment(@Valid Enrollment enrollments) {
+	public void enroll(@Valid Enrollment enrollments) {
 		
 			System.out.println(enrollments.getAcademyId() +" "+" "+enrollments.getLearnerId());
 			 Enrollment enrollment = new Enrollment();
@@ -43,7 +44,7 @@ public class EnrollmentService {
 		        
 		        erepository.save(enrollment);  
 		
-	}*/
+	}
              
 	
 	// enrollmentid//
@@ -54,7 +55,7 @@ public class EnrollmentService {
 		return erepository.findById(id);
 	}
 
-	
-	
+
+	 
 }
 	

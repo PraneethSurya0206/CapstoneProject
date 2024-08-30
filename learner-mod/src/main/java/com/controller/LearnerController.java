@@ -39,76 +39,129 @@ public class LearnerController {
 	
 	String baseUrl = "http://academy/academies";
 	private static final Logger logger = LoggerFactory.getLogger(LearnerController.class);
+	
 	//Registration
-	
 	@PostMapping("/")
-	public ResponseEntity<?> Register(@Valid @RequestBody Learner learner) throws CustomException
-	{
-		Learner register = lservice.addNewLearner(learner);
-		return new ResponseEntity<>(register, HttpStatus.OK);
-	}
-	
-	//login
-	@PostMapping("/login")
-	public ResponseEntity<?> loginCustomer(@Valid @RequestBody LearnerDto learnerlogin) {
-		Learner learners = learnerlogin.toEnity();
-		String customer = lservice.verify(learners); 
-		if (customer != null) {
-			return ResponseEntity.ok(customer);
-		} else {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Give proper email and password");
-		}
-	}
-	
-	//by sport name
-	@GetMapping("/sport/{sportName}")
-    public ResponseEntity<List<Academy>> getAcademiesBySportName(@PathVariable("sportName") String sportName) throws CustomException {
-		String url = baseUrl+ "/" + sportName;
-        List<Academy> academies = lservice.getAcademiesBySportName(sportName);
-        return new ResponseEntity<>(academies, HttpStatus.OK);
+    public ResponseEntity<?> Register(@Valid @RequestBody Learner learner) {
+        logger.info("Register method called with learner: {}", learner);
+         try {
+            Learner register = lservice.addNewLearner(learner);
+            logger.info("Learner successfully registered: {}", register);
+            return new ResponseEntity<>(register, HttpStatus.OK);
+        } catch (CustomException e) {
+            logger.error("Error registering learner: {}", e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 	
-	//enroll
-	/*  @PostMapping("/enroll")
+	
+	//login
+	 @PostMapping("/login")
+	 public ResponseEntity<?> loginCustomer(@Valid @RequestBody LearnerDto learnerlogin) {
+	         logger.info("Login attempt received for user: {}", learnerlogin.getEmail());
+	         try {
+	            Learner learners = learnerlogin.toEnity();
+	            logger.debug("Converted DTO to entity: {}", learners);
+	            String customer = lservice.verify(learners);
+	            if (customer != null)
+	            {	
+	            	logger.info("Login successful for user: {}", learnerlogin.getEmail());
+	                return ResponseEntity.ok(customer);
+	            } else {
+	            	logger.warn("Login failed for user: {}", learnerlogin.getEmail());
+	                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+	            }
+	        } catch (Exception e) {
+	            
+	            logger.error("Exception occurred during login attempt for user: {}", learnerlogin.getEmail(), e);
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing the request");
+	        }
+	    }
+	
+	
+	// get sportName from learners//
+	 @GetMapping("/sport/{sportName}")
+	 public ResponseEntity<List<Academy>> getAcademiesBySportName(@PathVariable("sportName") String sportName) throws CustomException {
+	        
+	        logger.info("Received request to get academies for sport: {}", sportName);
+	        String url = baseUrl + "/sport/" + sportName;
+	        logger.debug("Constructed URL for service call: {}", url);
+	        try {
+	            List<Academy> academies = lservice.getAcademiesBySportName(sportName);
+	             logger.info("Retrieved {} academies for sport: {}", academies.size(), sportName);
+	            return new ResponseEntity<>(academies, HttpStatus.OK);
+	        } catch (CustomException e) {
+	        	 logger.error("Error retrieving academies for sport: {}", sportName, e);
+	            throw e; 
+	        }
+	    }
+	        
+	 
+	 
+	 //enroll
+	 @PostMapping("/enroll")
              public ResponseEntity<String> LearnerEnrollment(@Valid @RequestBody Enrollment enrollments) {
                Logger logger = LoggerFactory.getLogger(this.getClass());
 
             try {
-               eservice.enrollment(enrollments);
+               eservice.enroll(enrollments);
                 logger.info("Enrolled successfully");
                   return new ResponseEntity<>("Enrolled successfully", HttpStatus.CREATED);
                  } catch (Exception e) {
                      logger.error("Error while enrolling: {}", e.getMessage());
                  return new ResponseEntity<>("Error while enrolling: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
                  }
-                 }*/
+                 }
 	
 	    
-	//enrollmentid
+	// get enrollment id
+	 
 	  @GetMapping("/{enrollmentId}")
-		public ResponseEntity<Enrollment> getEnrollmentById(@PathVariable("enrollmentId") int id) throws CustomException {
-			Optional<Enrollment> enrollment = eservice.getEnrollmentById(id);
-			if(enrollment.isPresent()) {
-				return ResponseEntity.ok(enrollment.get());
-			}else {
-				throw new CustomException("Record of No Enrollment is found by id: " + id);
-			}
-	}
+	  public ResponseEntity<Enrollment> getEnrollmentById(@PathVariable("enrollmentId") int enrollmentId) throws CustomException
+	  {
+	     logger.info("Received request to get enrollment by ID: {}", enrollmentId);
+	     try {
+	            Optional<Enrollment> enrollment = eservice.getEnrollmentById(enrollmentId);
+	            if (enrollment.isPresent())
+	            {
+	                
+	             logger.info("Enrollment found for ID: {}", enrollmentId);
+	                return ResponseEntity.ok(enrollment.get());
+	            } else {
+	                logger.warn("No enrollment record found for ID: {}", enrollmentId);
+	                throw new CustomException("No Enrollment record found by ID: " + enrollmentId);
+	            }
+	        
+	        } catch (Exception e) {
+	            
+	            logger.error("Unexpected error occurred while retrieving enrollment for ID: {}", enrollmentId, e);
+	            throw new CustomException("No Enrollment record found by ID: " + enrollmentId);
+	        }
+	    }
 	  
-	  
-		 @GetMapping("/academy/{academyId}")
-		  public ResponseEntity<?> searchAcademiesbyId(@PathVariable("academyId") int academyId) throws CustomException {
-		        Academy academy = lservice.getAcademyById(academyId);
-		        if (academy == null ) {
-		            throw new CustomException("No records found for the AcademyId: " + academyId);
-		        }
-		        
-		        return new ResponseEntity<>(academy, HttpStatus.OK);
-		    }
 	 
 	 
-	 
-	 
+	   @GetMapping("/academy/{academyId}")
+	   public ResponseEntity<?> searchAcademiesbyId(@PathVariable("academyId") int academyId) throws CustomException {
+	        
+	        logger.info("Received request to search for academy by ID: {}", academyId);
+
+	        try {
+	            
+	            Academy academy = lservice.getAcademyById(academyId);
+	             if (academy == null) {
+	                logger.warn("No academy found with ID: {}", academyId);
+	                throw new CustomException("No records found for the AcademyId: " + academyId);
+	            }
+	            
+	            logger.info("Academy found with ID: {}", academyId);
+	            return new ResponseEntity<>(academy, HttpStatus.OK);
+	         } catch (Exception e) {
+	             logger.error("Unexpected error occurred while retrieving academy with ID: {}", academyId, e);
+	             throw new CustomException("No records found for the AcademyId: " + academyId);
+	         }
+	     }
+	        }
 	 
 	 
 	 
@@ -136,7 +189,7 @@ public class LearnerController {
 	        return new ResponseEntity<>(academies, HttpStatus.OK);
 	    }*/
 	
-	}
+
  
        
 	
